@@ -5,3 +5,8 @@
 **/*.bak
 .idea
 .firebaserc
+.svn
+pl
+js
+css
+images
