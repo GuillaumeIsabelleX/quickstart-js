@@ -1,10 +1,38 @@
+var appGoalName = "Mastery Firebase Structhor App";
+
+var gulp = require('gulp'),
+	rename = require('gulp-rename'),
+	imagemin = require('gulp-imagemin'), // image optimization
+	notify = require("gulp-notify"),
+	clean = require('gulp-clean'),
+	cleanCSS = require('gulp-clean-css'),
+	minify = require('gulp-minify'),
+	run = require('gulp-run');
+	
+	
+//@feature --task-list to get the task list
+
+var taskListing = require('gulp-task-listing');
+ 
+// Add a task to render the output
+gulp.task('help', taskListing);
+gulp.task('help-more', taskListing.withFilters(/:/));
+/* //@feature Classify Help into subtask 
+//@a Try it
+gulp.task('help', taskListing.withFilters(function(task) {
+	isSubTask = // test task name for sub task properties
+    return isSubTask;
+}));
+*/
+
+
 //@a ###############################################
 //@v 				When changes, The App is Automatically Deployed
 //@a ###############################################
 
-var appGoalName = "Mastery Firebase Structhor App";
 
 const { parallel } = require('gulp');
+
 
 
 
@@ -53,15 +81,6 @@ var bump = require('gulp-bump');
 //@v TAG the committed work when Deploying
 // var tagversion = require('gulp-tag-version');
 
-var gulp = require('gulp'),
-	rename = require('gulp-rename'),
-	imagemin = require('gulp-imagemin'), // image optimization
-	notify = require("gulp-notify"),
-	clean = require('gulp-clean'),
-	cleanCSS = require('gulp-clean-css'),
-	minify = require('gulp-minify'),
-	run = require('gulp-run');
-
 var tlid = require('tlid');
 
 
@@ -94,7 +113,7 @@ var rootBase = process.cwd();
 
 
 gulp.task('test-gulp', function () {
-	
+
 	console.log(`Gulp works...`);
 
 });
@@ -118,7 +137,7 @@ var inAction = 0;
 
 gulp.task('watch-deploy', function () {
 	// watch many files
-	console.log(watchSources);
+	console.log("An attempt to watch and deploy firebase that is not working");
 
 	watch(watchSources, function () {
 
@@ -137,7 +156,7 @@ gulp.task('watch-deploy', function () {
 
 				var msgCompleted = appGoalName + '\t  Distributed!';
 
-				
+
 				//  .pipe(git.add());
 				var r = gulp.src('./package.json')
 
@@ -147,7 +166,7 @@ gulp.task('watch-deploy', function () {
 					]))
 
 					.on('end', function () { util.log(msgCompleted); })
-					
+
 
 
 					.pipe(gulp.dest('logs'))
@@ -155,7 +174,7 @@ gulp.task('watch-deploy', function () {
 
 					;
 
-					inAction = 0;
+				inAction = 0;
 
 				return r;
 			}
@@ -164,11 +183,21 @@ gulp.task('watch-deploy', function () {
 			return null;
 		}
 
-		
+
 	});
 });
 
-
+//######################################
+//@v Deploy an Angular App on Firebase 190225
+//@a Gulp that dist in here ./ngapp
+var ngapp_dist_source = "w://x/ngapp190223b/dist/ngapp190223b";
+var ngapp_dist_target = "./ngapp";
+gulp.task('sync-ngapp', function () {
+	console.log(`//@a Sync the distribution of the NGApp190223b :  Path: ${ngapp_dist_source} in order to deploy it on Firebase
+	`);
+	return gulp.src(ngapp_dist_source + "/**")
+		.pipe(gulp.dest(ngapp_dist_target));
+});
 
 
 
@@ -177,53 +206,66 @@ gulp.task('watch-deploy', function () {
 var pl_public_root = "h://x/_pl_dist/workdir2/public";
 
 var pl_sources = [pl_public_root + "/**"
-//,"!" + pl_public_root + ".svn/**"
-	
+	//,"!" + pl_public_root + ".svn/**"
+
 ];
 
 
 gulp.task('deploy-firebase', function () {
-  return 	 gulp.src('./package.json')
+	console.log(`//@a Deploy all to firebase `);
+	return gulp.src('./package.json')
 
-					// commit changes
-					.pipe(shell([
-						'firebase deploy '
-					]));
+		// commit changes
+		.pipe(shell([
+			'firebase deploy '
+		]));
 
 });
 
 //@a Puts the public dir in the dist
 gulp.task('sync-pl', function () {
-  return gulp.src(pl_public_root + "/**")
-  //(["public/**",'!.svn/**','!*/.svn/**']) //@bug Combine with BUILD??
+	console.log(`//@a Sync the PatternLab distribution  :  Path: ${pl_public_root} in order to deploy it on Firebase at /pl/index.html
+	`);
+	return gulp.src(pl_public_root + "/**")
+		//(["public/**",'!.svn/**','!*/.svn/**']) //@bug Combine with BUILD??
 
-  .pipe(gulp.dest("pl/"));
+		.pipe(gulp.dest("pl/"));
 });
 
 //@result Path in the App will be compatible
 gulp.task('sync-pl-js-path-compatible', function () {
-  return gulp.src("./pl/js/**")  .pipe(gulp.dest("./js/"));
+	console.log(`//@issue Fix the PatternLab distribution  :  Path: ${pl_public_root} in order to deploy it on Firebase and keep JS Path compatible
+	`);
+	return gulp.src("./pl/js/**").pipe(gulp.dest("./js/"));
 });
 gulp.task('sync-pl-css-path-compatible', function () {
-  return gulp.src("./pl/css/**")  .pipe(gulp.dest("./css/"));
+	console.log(`//@issue Fix the PatternLab distribution  :  Path: ${pl_public_root} in order to deploy it on Firebase and keep CSS Path compatible
+	`);
+	return gulp.src("./pl/css/**").pipe(gulp.dest("./css/"));
 });
 gulp.task('sync-pl-images-path-compatible', function () {
-  return gulp.src("./pl/images/**")  .pipe(gulp.dest("./images/"));
+	console.log(`//@issue Fix the PatternLab distribution  :  Path: ${pl_public_root} in order to deploy it on Firebase and keep images Path compatible
+	`);
+	return gulp.src("./pl/images/**").pipe(gulp.dest("./images/"));
 });
 
 
 
-gulp.task('sync-pl-compatibility', gulp.series('sync-pl-js-path-compatible','sync-pl-css-path-compatible','sync-pl-images-path-compatible'));
+gulp.task('sync-pl-compatibility',
+	gulp.series('sync-pl-js-path-compatible', 'sync-pl-css-path-compatible', 'sync-pl-images-path-compatible')
+);
 
-gulp.task('sync-all', gulp.series('sync-pl','sync-pl-compatibility'));
+gulp.task('sync-all', gulp.series('sync-pl', 'sync-pl-compatibility', 'sync-ngapp'));
 
-gulp.task('deploy-all', gulp.series('sync-pl-compatibility','deploy-firebase'));
+gulp.task('deploy-all', gulp.series('sync-pl-compatibility', 'deploy-firebase'));
+
+gulp.task('deploy', gulp.series('deploy-firebase'));
 
 gulp.task('clean-pl', function () {
 
-  console.log("Cleaning PL: " );
-  return gulp.src("./pl/", { read: false, allowEmpty: true, force: true })
+	console.log("Cleaning PL: ");
+	return gulp.src("./pl/", { read: false, allowEmpty: true, force: true })
 
-	.pipe(clean());
+		.pipe(clean());
 });
 
